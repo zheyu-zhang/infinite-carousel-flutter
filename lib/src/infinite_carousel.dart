@@ -160,11 +160,30 @@ class _InfiniteCarouselState extends State<InfiniteCarousel> {
       case Axis.horizontal:
         assert(debugCheckHasDirectionality(context));
         final TextDirection textDirection = Directionality.of(context);
-        final AxisDirection axisDirection =
-            textDirectionToAxisDirection(textDirection);
+        AxisDirection axisDirection = textDirectionToAxisDirection(textDirection);
+        if (widget.reverseOrder) {
+          axisDirection = _flipAxisDirection(axisDirection);
+        }
         return axisDirection;
       case Axis.vertical:
+        AxisDirection axisDirection = AxisDirection.up;
+        if (widget.reverseOrder) {
+          axisDirection = _flipAxisDirection(axisDirection);
+        }
+        return axisDirection;
+    }
+  }
+
+  AxisDirection _flipAxisDirection(AxisDirection direction) {
+    switch (direction) {
+      case AxisDirection.up:
         return AxisDirection.down;
+      case AxisDirection.down:
+        return AxisDirection.up;
+      case AxisDirection.left:
+        return AxisDirection.right;
+      case AxisDirection.right:
+        return AxisDirection.left;
     }
   }
 
