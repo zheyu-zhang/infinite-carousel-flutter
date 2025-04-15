@@ -29,20 +29,29 @@ class InfiniteCarousel extends StatefulWidget {
     this.axisDirection = Axis.horizontal,
     this.center = true,
     this.scrollBehavior,
+    this.reverseOrder = false,
   })  : assert(itemExtent > 0),
         assert(itemCount > 0),
         assert(velocityFactor > 0.0 && velocityFactor <= 1.0),
         childDelegate = SliverChildBuilderDelegate(
-          (context, index) =>
-              itemBuilder(context, index.abs() % itemCount, index),
-          childCount: loop ? null : itemCount,
+          (context, index) {
+            final displayIndex = reverseOrder
+                ? itemCount - (index.abs() % itemCount) - 1
+                : index.abs() % itemCount;
+            return itemBuilder(context, displayIndex, index);
+          },
+          childCount: loop ? null : itemCount, 
         ),
         reversedChildDelegate = loop
-            ? SliverChildBuilderDelegate(
-                (context, index) => itemBuilder(context,
-                    itemCount - (index.abs() % itemCount) - 1, -(index + 1)),
-              )
-            : null;
+          ? SliverChildBuilderDelegate(
+              (context, index) {
+                final displayIndex = reverseOrder
+                    ? itemCount - (index.abs() % itemCount) - 1
+                    : index.abs() % itemCount;
+                return itemBuilder(context, displayIndex, -(index + 1));
+              },
+            )
+          : null;
 
   /// Total items to build for the carousel.
   final int itemCount;
@@ -68,6 +77,9 @@ class InfiniteCarousel extends StatefulWidget {
 
   /// Delegate to lazily build items in reverse direction.
   final SliverChildDelegate? reversedChildDelegate;
+
+  /// Weather to reverse the order of items in the carousel.
+  final bool reverseOrder;
 
   /// Types of Physics supported by [InfiniteCarousel].
   ///
